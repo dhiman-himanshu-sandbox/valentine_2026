@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Hi Preksha, Will You Be My Valentine?</title>
+    <title>Will You Be My Valentine?</title>
     <link href="https://fonts.googleapis.com/css2?family=Pacifico&family=Quicksand:wght@400;600&display=swap" rel="stylesheet">
     <style>
         * { margin: 0; padding: 0; box-sizing: border-box; }
@@ -123,34 +123,58 @@
 
         #noBtn {
             background: linear-gradient(135deg, #d3d3d3 0%, #a8a8a8 100%);
-            /* FIXED: Removed 'position: fixed' so it starts side-by-side */
-            z-index: 999999 !important; 
+            position: relative;
+            z-index: 102; 
         }
 
+        /* Message Box Styles */
         .no-message {
             display: none;
             position: fixed;
-            background: linear-gradient(135deg, #ff6b9d 0%, #ff1493 100%);
-            color: white;
-            padding: 10px 20px;
-            border-radius: 25px;
+            background: rgba(255, 255, 255, 0.95);
+            border: 3px solid #ff6b9d;
+            color: #ff1493;
+            padding: 15px;
+            border-radius: 20px;
             font-size: 16px;
-            white-space: nowrap;
             z-index: 1000000;
-            box-shadow: 0 4px 15px rgba(255, 20, 147, 0.3);
-            font-weight: 600;
+            box-shadow: 0 10px 25px rgba(255, 20, 147, 0.3);
+            font-weight: 700;
             pointer-events: none;
+            flex-direction: column;
+            align-items: center;
+            text-align: center;
+            max-width: 220px;
+        }
+
+        .no-message img {
+            width: 100%;
+            height: 150px; /* Made slightly taller for better visibility */
+            object-fit: cover;
+            border-radius: 12px;
+            margin-bottom: 10px;
         }
 
         .success-message {
             display: none;
             animation: fadeInScale 0.6s ease;
         }
+        
+        /* Success GIF Style */
+        .success-gif {
+            width: 100%;
+            max-width: 300px;
+            height: auto;
+            border-radius: 20px;
+            margin: 20px 0;
+            box-shadow: 0 10px 30px rgba(255, 20, 147, 0.2);
+        }
+
         @keyframes fadeInScale {
             from { opacity: 0; transform: scale(0.8); }
             to { opacity: 1; transform: scale(1); }
         }
-        .success-message h2 { font-family: 'Pacifico', cursive; color: #ff1493; }
+        .success-message h2 { font-family: 'Pacifico', cursive; color: #ff1493; margin-bottom: 10px;}
         .heart-rain { position: fixed; pointer-events: none; z-index: 1000; }
         @keyframes fall { to { transform: translateY(100vh) rotate(360deg); opacity: 0; } }
 
@@ -164,7 +188,7 @@
     <div class="heart-bg" id="heartBg"></div>
     
     <div class="container">
-        <h1>💕 Hi Preksha, Will You Be My Valentine? 💕</h1>
+        <h1>💕 Hi Preksha,<br>Will You Be My Valentine? 💕</h1>
         <div class="emoji">🌹</div>
         <p class="message">
             You make every day special. I'd love to spend Valentine's Day with you.
@@ -178,20 +202,20 @@
         </div>
 
         <div class="success-message">
-            <h2>🎉 You Make Me So Happy! 🎉</h2>
-            <div class="emoji">💖</div>
-            <p>I'm the luckiest person in the world! 💕</p>
+            <h2>🎉 Yay! Best Day Ever! 🎉</h2>
+            <img src="happy-cat.gif" alt="Dancing Cats Celebration" class="success-gif">
+            <p>Let's make it unforgettable! 💕</p>
         </div>
     </div>
 
     <script>
-        // --- SETUP ---
         const yesBtn = document.getElementById('yesBtn');
         const noBtn = document.getElementById('noBtn');
         const successMessage = document.querySelector('.success-message');
         const buttonContainer = document.querySelector('.button-container');
         const heartBg = document.getElementById('heartBg');
         
+        // Background Hearts
         const hearts = ['💕', '💖', '💗', '💓', '💝', '❤️', '💘'];
         for (let i = 0; i < 15; i++) {
             const heart = document.createElement('div');
@@ -205,54 +229,48 @@
 
         let isMobile = window.innerWidth <= 768;
         let noClickCount = 0;
+        let hasMoved = false;
 
-        const funnyMessages = [
-            "Are you sure? 🤔", "100% sure? 😅", "That's rude 😢",
-            "I know you didn't mean that 💔", "Just one yes? 🥺",
-            "Come on! 🙏", "Think about it... ❤️", "You'll regret this! 😭"
+        // --- THE FUNNY CONTENT MAPPING ---
+        // This pairs the text with your specific renamed images
+        const funnyContent = [
+            { text: "Are you sure? 🤔", img: "sus-cat.jpg" },          // Eyebrow cat
+            { text: "Don't do this to me 💔", img: "crying-cat.jpg" }, // Shower cat
+            { text: "Look at this face! 🥺", img: "sad-cat.png" },     // Frown 2
+            { text: "Last chance! 🙀", img: "shocked-cat.png" },       // Frown 1
+            { text: "I'm gonna cry... 😭", img: "crying-cat.jpg" }     // Shower cat again
         ];
-
-        // --- THE FIX: TELEPORT BUTTON ON LOAD (WITH GHOST SPACER) ---
-        window.onload = function() {
-            // 1. Get exact position of the No button while it's still side-by-side
-            const rect = noBtn.getBoundingClientRect();
-            
-            // 2. Create a "Ghost" button to fill the empty space
-            // This stops the Yes button from jumping to the center
-            const ghostBtn = document.createElement('div');
-            ghostBtn.style.width = rect.width + 'px';
-            ghostBtn.style.height = rect.height + 'px';
-            ghostBtn.style.display = 'inline-block';
-            
-            // Insert ghost before removing the real button
-            noBtn.parentNode.insertBefore(ghostBtn, noBtn);
-
-            // 3. Teleport real button to body
-            document.body.appendChild(noBtn);
-            
-            // 4. Lock it in the exact same visual position
-            noBtn.style.position = "fixed";
-            noBtn.style.left = rect.left + "px";
-            noBtn.style.top = rect.top + "px";
-        };
 
         window.addEventListener('resize', () => {
             isMobile = window.innerWidth <= 768;
         });
 
-        // --- INTERACTION LOGIC ---
-        if (isMobile) {
-            noBtn.addEventListener('click', handleNoInteraction);
-        } else {
-            noBtn.addEventListener('mouseenter', handleNoInteraction);
-            noBtn.addEventListener('click', (e) => e.preventDefault());
-        }
-
-        function handleNoInteraction(e) {
+        function interactWithNoBtn(e) {
             if (e) e.preventDefault();
+            
+            if (!hasMoved) {
+                const rect = noBtn.getBoundingClientRect();
+                const ghostBtn = document.createElement('div');
+                ghostBtn.style.width = rect.width + 'px';
+                ghostBtn.style.height = rect.height + 'px';
+                ghostBtn.style.display = 'block';
+                noBtn.parentNode.insertBefore(ghostBtn, noBtn);
+                document.body.appendChild(noBtn);
+                noBtn.style.position = 'fixed';
+                noBtn.style.zIndex = '999999';
+                hasMoved = true;
+            }
+
             moveButton();
             enlargeYesButton();
             showFunnyMessage();
+        }
+
+        if (isMobile) {
+            noBtn.addEventListener('click', interactWithNoBtn);
+        } else {
+            noBtn.addEventListener('mouseenter', interactWithNoBtn);
+            noBtn.addEventListener('click', (e) => e.preventDefault());
         }
 
         function moveButton() {
@@ -270,7 +288,7 @@
         }
 
         function showFunnyMessage() {
-            let message = funnyMessages[noClickCount % funnyMessages.length];
+            let content = funnyContent[noClickCount % funnyContent.length];
             let messageEl = document.querySelector('.no-message');
             
             if (!messageEl) {
@@ -279,14 +297,24 @@
                 document.body.appendChild(messageEl);
             }
             
-            messageEl.textContent = message;
-            messageEl.style.display = 'block';
+            messageEl.innerHTML = ''; // Clear old content
+
+            const imgEl = document.createElement('img');
+            imgEl.src = content.img;
+            messageEl.appendChild(imgEl);
+
+            const textEl = document.createElement('div');
+            textEl.textContent = content.text;
+            messageEl.appendChild(textEl);
+
+            messageEl.style.display = 'flex';
             
             const btnLeft = parseFloat(noBtn.style.left);
             const btnTop = parseFloat(noBtn.style.top);
             
-            messageEl.style.left = (btnLeft + 20) + 'px';
-            messageEl.style.top = (btnTop - 50) + 'px';
+            // Center horizontally, place vertically above
+            messageEl.style.left = (btnLeft + (noBtn.offsetWidth / 2) - (messageEl.offsetWidth / 2)) + 'px';
+            messageEl.style.top = (btnTop - messageEl.offsetHeight - 20) + 'px';
             
             noClickCount++;
         }
